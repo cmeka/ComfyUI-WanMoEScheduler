@@ -1,0 +1,14 @@
+[project]
+name = "WanMoEScheduler"
+description = "A ComfyUI scheduler that finds the shift value required to align high/low sampling steps with a target sigma boundary."
+version = "1.0.0"
+license = {file = "LICENSE"} 
+
+[project.urls]
+Repository = "https://github.com/cmeka/ComfyUI-WanMoEScheduler"
+#  Used by Comfy Registry https://registry.comfy.org
+Documentation = "https://github.com/cmeka/ComfyUI-WanMoEScheduler"
+"Bug Tracker" = "https://github.com/cmeka/ComfyUI-WanMoEScheduler/issues"
+
+[tool.comfy]
+PublisherId = "cmeka"
