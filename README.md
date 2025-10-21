@@ -65,7 +65,7 @@ The **WanMoEScheduler** provides advanced sigma calculation for two-stage sampli
 
 #### Input Parameters
 
-- **`model`**: The model used for sigma calculations.
+- **`model`**: The model used for sigma calculations (can be either high or low, same result).
 - **`scheduler`**: The sampling scheduler to use (the list is filtered to show only compatible schedulers).
 - **`steps_high`**: The desired number of steps for the high-noise sampling stage (default: 4).
 - **`steps_low`**: The desired number of steps for the low-noise sampling stage (default: 4).
@@ -121,7 +121,7 @@ You can further divide the sampling process. For example, to split the high-nois
 
 This method is common for standard two-pass workflows.
 
-1.  Connect your model to the **WanMoEScheduler** node.
+1.  Connect your model (high or low) to the **WanMoEScheduler** node.
 2.  Connect the **`shift`** output to the **ModelSamplingSD3** nodes (high and low)
 3.  In your **first KSampler (Advanced)** node (for the high-noise stage):
     - Connect **`steps_total`** to the `steps` input.
