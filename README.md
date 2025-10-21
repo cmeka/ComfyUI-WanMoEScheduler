@@ -69,47 +69,47 @@ The **WanMoEScheduler** provides advanced sigma calculation for two-stage sampli
 - **`scheduler`**: The sampling scheduler to use (the list is filtered to show only compatible schedulers).
 - **`steps_high`**: The desired number of steps for the high-noise sampling stage (default: 4).
 - **`steps_low`**: The desired number of steps for the low-noise sampling stage (default: 4).
-- **`denoise`**: The amount of noise to remove, from 0.0 (no change) to 1.0 (full denoise) (default: 1.0).
 - **`boundary`**: The target sigma value to separate the high and low stages (default: 0.875).
 - **`interval`**: The step size for the shift search algorithm. A smaller value is more precise but slower (default: 0.01).
+- **`denoise`**: The amount of noise to remove, from 0.0 (no change) to 1.0 (full denoise) (default: 1.0).
 
 #### Output Parameters
 
 - **`shift`**: The calculated optimal shift value.
+- **`steps`**: The total number of sampling steps (`steps_high` + `steps_low`).
+- **`steps_high`**: The number of high-noise steps (passthrough).
+- **`steps_low`**: The number of low-noise steps (passthrough).
 - **`sigmas`**: The complete sigma sequence for all steps.
 - **`sigmas_high`**: The sigma sequence for the high-noise steps.
 - **`sigmas_low`**: The sigma sequence for the low-noise steps.
-- **`steps_total`**: The total number of sampling steps (`steps_high` + `steps_low`).
-- **`steps_high`**: The number of high-noise steps (passthrough).
-- **`steps_low`**: The number of low-noise steps (passthrough).
 
 ### Recommended Settings
 
-#### For WAN Models
-- **Image-to-Video (I2V)**: `boundary` of `0.90` to `0.93`.
+#### For WAN 2.2
+- **Image-to-Video (I2V)**: `boundary` of `0.90`.
 - **Text-to-Video (T2V)**: `boundary` of `0.875`.
 
-#### General Tips
+#### Tips
 - Use **`interval`**: `0.01` for high precision (slightly slower) or `0.1` for faster calculations (less precise).
-- If using speed-enhancing LoRAs, you may need to lower their strength when increasing the number of `steps_low`.
-- The default `boundary` of `0.875` is a good starting point for many general workflows.
+- If using speed LoRAs, you may need to lower their strength when increasing the number of `steps_low`.
+- The default `boundary` of `0.875` is a good starting point for many general workflows, however I've had good success with higher bounraries (0.930+) and a few more high noise steps.
 
 ## Workflow Integration
 
-There are two primary ways to use this node's outputs: by feeding the `sigmas` directly into a custom sampler or by using the `shift` and `steps` with advanced KSamplers.
+There are two primary ways to use this node's outputs: by feeding the `sigmas` directly into a custom sampler or by using the `shift` and `steps` with KSamplers.
 
 ### Method 1: Using `sigmas` (for Custom Samplers)
 
-1.  Connect your model to the **WanMoEScheduler** node.
-2.  Route the **`sigmas_high`** output to your first sampler (high-noise pass).
-3.  Route the **`sigmas_low`** output to your second sampler (low-noise pass).
-4.  Apply any stage-specific conditioning or LoRAs as needed.
+1.  Connect your model (high or low) to the **WanMoEScheduler** node.
+    - If using WanVideoWrapper create a separate **Load Diffusion Model** or **Unet Loader** node and connect it (fast, won't use VRAM).
+2.  Connect the **`sigmas_high`** output to your first sampler (high-noise pass).
+3.  Connect the **`sigmas_low`** output to your second sampler (low-noise pass).
 
-#### Method 1 Example (ComfyUI Core)
-![Method 1 Example (ComfyUI Core)](examples/images/using-sigmas.png)
+#### SamplerCustom Example
+![SamplerCustom Example](examples/images/using-sigmas.png)
 
-#### Method 1 Example (WanVideoWrapper)
-![Method 1 Example (WanVideoWrapper)](examples/images/using-wanvideowrapper.png)
+#### WanVideoWrapper Example
+![WanVideoWrapper Example](examples/images/using-wanvideowrapper.png)
 
 #### For More Than Two Stages
 You can further divide the sampling process. For example, to split the high-noise stage:
@@ -117,7 +117,7 @@ You can further divide the sampling process. For example, to split the high-nois
 2.  Connect the **`sigmas_high`** output to a `SplitSigmas` node.
 3.  Set the `step` parameter on the `SplitSigmas` node to your desired split point. This will give you two separate sigma sequences from the original high-noise portion.
 
-### Method 2: Using `shift` and `steps` (with Advanced KSamplers)
+### Method 2: Using `shift` and `steps` with KSampler (Advanced)
 
 This method is common for standard two-pass workflows.
 
@@ -131,8 +131,8 @@ This method is common for standard two-pass workflows.
     - Connect **`steps_high`** to the `start_at_step` input.
 5.  **Important**: Ensure the `scheduler` selected in **WanMoEScheduler** is the same one selected in your **KSampler (Advanced)** nodes.
 
-#### Method 2 Example (ComfyUI Core)
-![Method 2 Example (ComfyUI Core)](examples/images/using-ksampler.png)
+#### KSampler Example
+![KSampler Example](examples/images/using-ksampler.png)
 
 #### For More Than Two Stages
 1.  Follow the steps above.
@@ -160,3 +160,8 @@ The node automatically filters the scheduler list to include only those that are
 - **Adjust `boundary`**: Experiment with different boundary values. The optimal value can depend on the model and desired outcome.
 - **Change Step Ratios**: Try different combinations of `steps_high` and `steps_low`.
 - **Tune LoRA Strength**: If using speed LoRAs, their strength may need to be adjusted to match the number of steps in each stage.
+
+**WanVideoWrapper doesn't work**
+- At this time only unipc, dpm++, and dpm++_sde work. The rest are "disabled" for custom schedulers/sigmas either by design or from a bug.
+I've created a pull request to fix it here:
+[Fix custom sigmas for supported schedulers #1510](https://github.com/kijai/ComfyUI-WanVideoWrapper/pull/1510)
