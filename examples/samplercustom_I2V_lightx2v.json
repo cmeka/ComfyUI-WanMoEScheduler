@@ -1414,20 +1414,20 @@
         },
         {
           "on": true,
-          "lora": "wan2.2_i2v_A14b_high_noise_lora_rank64_lightx2v_4step_1022.safetensors",
-          "strength": 0.75,
-          "strengthTwo": null
-        },
-        {
-          "on": true,
           "lora": "lightx2v_I2V_14B_480p_cfg_step_distill_rank256_bf16.safetensors",
-          "strength": 2,
+          "strength": 4,
           "strengthTwo": null
         },
         {
-          "on": true,
+          "on": false,
           "lora": "lightx2v_T2V_14B_cfg_step_distill_v2_lora_rank256_bf16.safetensors",
-          "strength": 4,
+          "strength": 1,
+          "strengthTwo": null
+        },
+        {
+          "on": false,
+          "lora": "wan2.2_i2v_A14b_high_noise_lora_rank64_lightx2v_4step_1022.safetensors",
+          "strength": 0.25,
           "strengthTwo": null
         },
         {},
@@ -1509,10 +1509,10 @@
         "widget_ue_connectable": {}
       },
       "widgets_values": [
-        "beta57",
+        "beta",
         4,
         6,
-        0.915,
+        0.875,
         0.01,
         1
       ]
@@ -2125,8 +2125,8 @@
         },
         {
           "on": true,
-          "lora": "Wan2.2\\Speed\\wan2.2_i2v_A14b_low_noise_lora_rank64_lightx2v_4step_1022.safetensors",
-          "strength": 1,
+          "lora": "wan2.2_i2v_A14b_low_noise_lora_rank64_lightx2v_4step_1022.safetensors",
+          "strength": 1.4,
           "strengthTwo": null
         },
         {},
